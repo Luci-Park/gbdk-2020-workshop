@@ -5,7 +5,7 @@
 # If you move this project you can change the directory 
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
 ifndef GBDK_HOME
-	GBDK_HOME = ../../../
+	GBDK_HOME = C:/dev/gbdk/
 endif
 
 LCC = $(GBDK_HOME)bin/lcc 
@@ -20,8 +20,8 @@ endif
 PROJECTNAME    = Snake
 
 BINS	    = $(PROJECTNAME).gb
-CSOURCES   := $(wildcard *.c)
-ASMSOURCES := $(wildcard *.s)
+CSOURCES   := $(wildcard *.c) # find all .c files in current folder
+ASMSOURCES := $(wildcard *.s) # find all .s files in current folder
 
 all:	$(BINS)
 
