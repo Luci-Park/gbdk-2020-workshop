@@ -138,14 +138,17 @@ void grow_snake()
 void handle_input()
 {
     uint8_t j = joypad();
+    int newDir = dir;
     if (j & J_UP)
-        dir = DIR_UP;
+        newDir = DIR_UP;
     else if (j & J_DOWN)
-        dir = DIR_DOWN;
+        newDir = DIR_DOWN;
     else if (j & J_LEFT)
-        dir = DIR_LEFT;
+        newDir = DIR_LEFT;
     else if (j & J_RIGHT)
-        dir = DIR_RIGHT;
+        newDir = DIR_RIGHT;
+    
+    if((newDir + 2) % 4 != dir) dir = newDir;
 }
 
 // ========== MAIN LOOP ==========
