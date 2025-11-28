@@ -55,16 +55,26 @@ void place_sprite_on_grid(uint8_t index, uint8_t gx, uint8_t gy)
     move_sprite(index, px, py);
 }
 
-// place food somewhere random
-void place_food_random()
-{
-    food_x = rand8() % GRID_W;
-    food_y = rand8() % GRID_H;
+
+// safe food placement
+uint8_t is_on_snake(uint8_t x, uint8_t y) {
+    for (uint8_t i = 0; i < snake_len; ++i)
+        if (snake_x[i] == x && snake_y[i] == y) return 1;
+    return 0;
+}
+
+void place_food_random_safe(void) {
+    uint8_t x, y;
+    do {
+        x = rand8() % GRID_W;
+        y = rand8() % GRID_H;
+    } while (is_on_snake(x, y));
+    food_x = x; food_y = y;
     place_sprite_on_grid(FOOD_SPRITE_INDEX, food_x, food_y);
 }
 
 // setup snake in center
-void init_snake()
+void init_snake(void)
 {
     snake_len = 3;
     uint8_t cx = GRID_W / 2;
@@ -78,7 +88,7 @@ void init_snake()
 }
 
 // draw all segments
-void draw_snake()
+void draw_snake(void)
 {
     for (uint8_t i = 0; i < snake_len; ++i)
     {
@@ -88,7 +98,7 @@ void draw_snake()
 }
 
 // update snake position + wrapping
-void update_snake_position()
+void update_snake_position(void)
 {
     for (uint8_t i = 0; i < snake_len - 1; ++i)
     {
@@ -122,7 +132,7 @@ void update_snake_position()
 }
 
 // grow snake by 1 segment
-void grow_snake()
+void grow_snake(void)
 {
     if (snake_len >= MAX_SNAKE)
         return;
@@ -134,21 +144,20 @@ void grow_snake()
     snake_len++;
 }
 
-// read input for direction
-void handle_input()
-{
+// handle safe input
+uint8_t opposite_dir(uint8_t d) {
+    return (d ^ 2); // DIR_UP(0)^2 -> 2 (DOWN), DIR_RIGHT(1)^2 -> 3 (LEFT) etc
+}
+
+void handle_input_safe(void) {
     uint8_t j = joypad();
-    int newDir = dir;
-    if (j & J_UP)
-        newDir = DIR_UP;
-    else if (j & J_DOWN)
-        newDir = DIR_DOWN;
-    else if (j & J_LEFT)
-        newDir = DIR_LEFT;
-    else if (j & J_RIGHT)
-        newDir = DIR_RIGHT;
-    
-    if((newDir + 2) % 4 != dir) dir = newDir;
+    uint8_t new_dir = dir;
+    if (j & J_UP) new_dir = DIR_UP;
+    else if (j & J_DOWN) new_dir = DIR_DOWN;
+    else if (j & J_LEFT) new_dir = DIR_LEFT;
+    else if (j & J_RIGHT) new_dir = DIR_RIGHT;
+
+    if (new_dir != opposite_dir(dir)) dir = new_dir;
 }
 
 // ========== MAIN LOOP ==========
@@ -168,7 +177,7 @@ void main(void)
     DISPLAY_ON;
 
     init_snake();
-    place_food_random();
+    place_food_random_safe();
     draw_snake();
     place_sprite_on_grid(FOOD_SPRITE_INDEX, food_x, food_y);
 
@@ -179,7 +188,7 @@ void main(void)
         wait_vbl_done();
         frame_counter++;
 
-        handle_input();
+        handle_input_safe();
 
         if ((frame_counter % FRAME_DELAY) == 0)
         {
@@ -190,7 +199,7 @@ void main(void)
                 snake_y[snake_len - 1] == food_y)
             {
                 grow_snake();
-                place_food_random();
+                place_food_random_safe();
             }
 
             draw_snake();
