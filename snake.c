@@ -1,6 +1,5 @@
 #include <gb/gb.h>
 #include <stdint.h>
-
 // ========== SIMPLE RNG (no srand/rand needed) ==========
 static uint16_t rng_state = 0xACE1u;
 uint8_t rand8(void)
@@ -45,6 +44,18 @@ enum
 uint8_t dir = DIR_RIGHT;
 
 uint8_t food_x, food_y;
+
+// ========= FUNCTION PROTOTYPES =========
+uint8_t rand8(void);
+void place_sprite_on_grid(uint8_t index, uint8_t gx, uint8_t gy);
+uint8_t is_on_snake(uint8_t x, uint8_t y);
+void place_food_random_safe(void);
+void init_snake(void);
+void draw_snake(void);
+void update_snake_position(void);
+void grow_snake(void);
+uint8_t opposite_dir(uint8_t d);
+void handle_input_safe(void);
 
 // ========== UTILITY FUNCTIONS ==========
 
