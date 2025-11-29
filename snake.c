@@ -103,8 +103,7 @@ void draw_snake(void)
 {
     for (uint8_t i = 0; i < snake_len; ++i)
     {
-        set_sprite_tile(i, 0);
-        place_sprite_on_grid(i, snake_x[i], snake_y[i]);
+        set_bkg_tiles(snake_x[i], snake_y[i], 1, 1, tile_filled);
     }
 }
 
@@ -176,7 +175,8 @@ void main(void)
 {
     rng_state = DIV_REG; // seed RNG with hardware divider
 
-    set_sprite_data(0, 1, tile_filled);
+    set_sprite_data(0, 1, tile_filled);    
+    set_bkg_data(0, 1, tile_filled);
 
     for (uint8_t i = 0; i < MAX_SPRITES; ++i)
     {
@@ -185,7 +185,9 @@ void main(void)
     }
 
     SHOW_SPRITES;
+    SHOW_BKG;
     DISPLAY_ON;
+
 
     init_snake();
     place_food_random_safe();
