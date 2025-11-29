@@ -16,45 +16,19 @@ uint8_t rand8(void)
 #define FOOD_SPRITE_INDEX 39
 #define MAX_SNAKE (FOOD_SPRITE_INDEX) // 39 segments max
 
-#define TILE_EMPTY  0
-#define TILE_SNAKE  1
-#define TILE_FOOD   2
-
 #define FRAME_DELAY 6 // frames between movement steps
 
 // ========== TILE DATA ==========
-const uint8_t tile_empty[16] = {
-    0x00, 0x00,
-    0x00, 0x00,
-    0x00, 0x00,
-    0x00, 0x00,
-    0x00, 0x00,
-    0x00, 0x00,
-    0x00, 0x00,
-    0x00, 0x00
-};
+const uint8_t tile_filled[16] = {
+    0xFF, 0x00,
+    0xFF, 0x00,
+    0xFF, 0x00,
+    0xFF, 0x00,
+    0xFF, 0x00,
+    0xFF, 0x00,
+    0xFF, 0x00,
+    0xFF, 0x00};
 
-const uint8_t tile_snake[16] = {
-    0xFF, 0x00,
-    0xFF, 0x00,
-    0xFF, 0x00,
-    0xFF, 0x00,
-    0xFF, 0x00,
-    0xFF, 0x00,
-    0xFF, 0x00,
-    0xFF, 0x00
-};
-
-const uint8_t tile_food[16] = {
-    0xFF, 0xFF,
-    0xFF, 0xFF,
-    0xFF, 0xFF,
-    0xFF, 0xFF,
-    0xFF, 0xFF,
-    0xFF, 0xFF,
-    0xFF, 0xFF,
-    0xFF, 0xFF
-};
 // ========== GAME STATE ==========
 uint8_t snake_x[MAX_SNAKE];
 uint8_t snake_y[MAX_SNAKE];
@@ -129,7 +103,7 @@ void draw_snake(void)
 {
     for (uint8_t i = 0; i < snake_len; ++i)
     {
-        set_sprite_tile(TILE_SNAKE, 0);
+        set_sprite_tile(i, 0);
         place_sprite_on_grid(i, snake_x[i], snake_y[i]);
     }
 }
@@ -202,17 +176,11 @@ void main(void)
 {
     rng_state = DIV_REG; // seed RNG with hardware divider
 
-    set_sprite_data(TILE_SNAKE, 1, tile_snake);
-    set_sprite_data(TILE_FOOD, 1, tile_food);
-
-    //set food sprite
-    set_sprite_tile(FOOD_SPRITE_INDEX, TILE_FOOD);
-    move_sprite(FOOD_SPRITE_INDEX, 0, 0);
+    set_sprite_data(0, 1, tile_filled);
 
     for (uint8_t i = 0; i < MAX_SPRITES; ++i)
     {
-        if(i == FOOD_SPRITE_INDEX) continue;
-        set_sprite_tile(i, TILE_SNAKE);
+        set_sprite_tile(i, 0);
         move_sprite(i, 0, 0);
     }
 
