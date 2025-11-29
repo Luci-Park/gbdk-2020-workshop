@@ -14,7 +14,7 @@ uint8_t rand8(void)
 
 #define MAX_SPRITES 40
 #define FOOD_SPRITE_INDEX 39
-#define MAX_SNAKE (FOOD_SPRITE_INDEX) // 39 segments max
+#define MAX_SNAKE 100
 
 #define FRAME_DELAY 6 // frames between movement steps
 
@@ -55,6 +55,9 @@ const uint8_t tile_food[16] = {
 uint8_t snake_x[MAX_SNAKE];
 uint8_t snake_y[MAX_SNAKE];
 uint8_t snake_len;
+
+uint8_t snake_old_x;
+uint8_t snake_old_y;
 
 enum
 {
@@ -121,6 +124,19 @@ void init_snake(void)
 }
 
 // draw all segments
+void draw_all_snake(void)
+{    
+    for (uint8_t i = 0; i < snake_len; ++i)
+    {
+        set_bkg_tile_xy(snake_x[i], snake_y[i], 0);
+    }
+}
+
+void draw_head_tail_snake(void)
+{
+    set_bkg_tile_xy(snake_old_x, snake_old_y, 1);
+    set_bkg_tile_xy(snake_x[snake_len - 1], snake_y[snake_len - 1], 0) ;
+}
 void draw_snake(void)
 {
     for (uint8_t y = 0; y < GRID_H; ++y) {
@@ -134,9 +150,13 @@ void draw_snake(void)
     }
 }
 
+
 // update snake position + wrapping
 void update_snake_position(void)
 {
+    snake_old_x = snake_x[0];
+    snake_old_y = snake_y[0];
+
     for (uint8_t i = 0; i < snake_len - 1; ++i)
     {
         snake_x[i] = snake_x[i + 1];
@@ -166,8 +186,6 @@ void update_snake_position(void)
 
     snake_x[snake_len - 1] = (uint8_t)hx;
     snake_y[snake_len - 1] = (uint8_t)hy;
-
-
 }
 
 // grow snake by 1 segment
@@ -219,7 +237,7 @@ void main(void)
 
     init_snake();
     place_food_random_safe();
-    draw_snake();
+    draw_all_snake();
     place_sprite_on_grid(FOOD_SPRITE_INDEX, food_x, food_y);
 
     uint16_t frame_counter = 0;
@@ -243,7 +261,7 @@ void main(void)
                 place_food_random_safe();
             }
 
-            draw_snake();
+            draw_head_tail_snake();
         }
     }
 }
