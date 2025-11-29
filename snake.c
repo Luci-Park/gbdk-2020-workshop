@@ -27,8 +27,30 @@ const uint8_t tile_filled[16] = {
     0xFF, 0x00,
     0xFF, 0x00,
     0xFF, 0x00,
-    0xFF, 0x00};
+    0xFF, 0x00
+};
 
+const uint8_t tile_empty[16] = {
+    0x00, 0x00,
+    0x00, 0x00,
+    0x00, 0x00,
+    0x00, 0x00,
+    0x00, 0x00,
+    0x00, 0x00,
+    0x00, 0x00,
+    0x00, 0x00
+};
+
+const uint8_t tile_food[16] = {
+    0xFF, 0xFF,
+    0xFF, 0xFF,
+    0xFF, 0xFF,
+    0xFF, 0xFF,
+    0xFF, 0xFF,
+    0xFF, 0xFF,
+    0xFF, 0xFF,
+    0xFF, 0xFF
+};
 // ========== GAME STATE ==========
 uint8_t snake_x[MAX_SNAKE];
 uint8_t snake_y[MAX_SNAKE];
@@ -101,9 +123,14 @@ void init_snake(void)
 // draw all segments
 void draw_snake(void)
 {
+    for (uint8_t y = 0; y < GRID_H; ++y) {
+        for (uint8_t x = 0; x < GRID_W; ++x) {
+            set_bkg_tile_xy(x, y, 1);
+        }
+    }
     for (uint8_t i = 0; i < snake_len; ++i)
     {
-        set_bkg_tiles(snake_x[i], snake_y[i], 1, 1, tile_filled);
+        set_bkg_tile_xy(snake_x[i], snake_y[i], 0);
     }
 }
 
@@ -139,6 +166,8 @@ void update_snake_position(void)
 
     snake_x[snake_len - 1] = (uint8_t)hx;
     snake_y[snake_len - 1] = (uint8_t)hy;
+
+
 }
 
 // grow snake by 1 segment
@@ -175,14 +204,13 @@ void main(void)
 {
     rng_state = DIV_REG; // seed RNG with hardware divider
 
-    set_sprite_data(0, 1, tile_filled);    
-    set_bkg_data(0, 1, tile_filled);
+    set_sprite_data(0, 1, tile_food);    
 
-    for (uint8_t i = 0; i < MAX_SPRITES; ++i)
-    {
-        set_sprite_tile(i, 0);
-        move_sprite(i, 0, 0);
-    }
+    set_bkg_data(0, 1, tile_filled);
+    set_bkg_data(1, 1, tile_empty);
+    
+    set_sprite_tile(FOOD_SPRITE_INDEX, 0);
+    move_sprite(FOOD_SPRITE_INDEX, 0, 0);
 
     SHOW_SPRITES;
     SHOW_BKG;
