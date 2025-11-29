@@ -128,22 +128,11 @@ void draw_all_snake(void)
 
 void draw_head_tail_snake(void)
 {
-    set_bkg_tile_xy(snake_old_x, snake_old_y, 0);
+    if(!is_on_snake(snake_old_x, snake_old_y))
+        set_bkg_tile_xy(snake_old_x, snake_old_y, 0);
+        
     set_bkg_tile_xy(snake_x[snake_len - 1], snake_y[snake_len - 1], 1) ;
 }
-void draw_snake(void)
-{
-    for (uint8_t y = 0; y < GRID_H; ++y) {
-        for (uint8_t x = 0; x < GRID_W; ++x) {
-            set_bkg_tile_xy(x, y, 1);
-        }
-    }
-    for (uint8_t i = 0; i < snake_len; ++i)
-    {
-        set_bkg_tile_xy(snake_x[i], snake_y[i], 0);
-    }
-}
-
 
 // update snake position + wrapping
 void update_snake_position(void)
