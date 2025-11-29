@@ -70,18 +70,6 @@ uint8_t dir = DIR_RIGHT;
 
 uint8_t food_x, food_y;
 
-// ========= FUNCTION PROTOTYPES =========
-uint8_t rand8(void);
-void place_sprite_on_grid(uint8_t index, uint8_t gx, uint8_t gy);
-uint8_t is_on_snake(uint8_t x, uint8_t y);
-void place_food_random_safe(void);
-void init_snake(void);
-void draw_snake(void);
-void update_snake_position(void);
-void grow_snake(void);
-uint8_t opposite_dir(uint8_t d);
-void handle_input_safe(void);
-
 // ========== UTILITY FUNCTIONS ==========
 
 void place_sprite_on_grid(uint8_t index, uint8_t gx, uint8_t gy)
@@ -91,6 +79,12 @@ void place_sprite_on_grid(uint8_t index, uint8_t gx, uint8_t gy)
     move_sprite(index, px, py);
 }
 
+void clear_background_layer(void)
+{
+    for(uint8_t i = 0; i < SCREENWIDTH; i++)
+        for(uint8_t j = 0; j < SCREENHEIGHT; j++)
+            set_bkg_tile_xy(i, j, 0);
+}
 
 // safe food placement
 uint8_t is_on_snake(uint8_t x, uint8_t y) {
@@ -128,14 +122,14 @@ void draw_all_snake(void)
 {    
     for (uint8_t i = 0; i < snake_len; ++i)
     {
-        set_bkg_tile_xy(snake_x[i], snake_y[i], 0);
+        set_bkg_tile_xy(snake_x[i], snake_y[i], 1);
     }
 }
 
 void draw_head_tail_snake(void)
 {
-    set_bkg_tile_xy(snake_old_x, snake_old_y, 1);
-    set_bkg_tile_xy(snake_x[snake_len - 1], snake_y[snake_len - 1], 0) ;
+    set_bkg_tile_xy(snake_old_x, snake_old_y, 0);
+    set_bkg_tile_xy(snake_x[snake_len - 1], snake_y[snake_len - 1], 1) ;
 }
 void draw_snake(void)
 {
@@ -224,8 +218,8 @@ void main(void)
 
     set_sprite_data(0, 1, tile_food);    
 
-    set_bkg_data(0, 1, tile_filled);
-    set_bkg_data(1, 1, tile_empty);
+    set_bkg_data(1, 1, tile_filled);
+    set_bkg_data(0, 1, tile_empty);
     
     set_sprite_tile(FOOD_SPRITE_INDEX, 0);
     move_sprite(FOOD_SPRITE_INDEX, 0, 0);
@@ -234,7 +228,7 @@ void main(void)
     SHOW_BKG;
     DISPLAY_ON;
 
-
+    clear_background_layer();
     init_snake();
     place_food_random_safe();
     draw_all_snake();
